@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" href="pic/5-Best-Free-and-Paid-Weather-APIs-2019-e1587582023501 (1).png">
+    <link rel="icon" href="pic/5-Best-Free-and-Paid-Weather-APIs-2019-e1587582023501 (1).png">
+    <title>Weather App</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+
+    <style>
+        body{
+            
+            font-style: inherit;
+            text-align: center;
+            background-image: url("pic/images\ \(1\).jfif");
+            background-repeat: no-repeat;
+            background-size:  cover;
+            /* background-image: url("pic/NICE-WEATHER.jpg");height: 100%; */
+        }
+        /* .weatherCard {
+            border: 1px solid black;
+            margin-top: 30px;
+            border-radius: 30px;
+            padding: 10px;
+        }
+        #forecast {
+            display: flex;
+            overflow-x: scroll;
+        }
+        #forecast>div {
+            width: 190px;
+            margin: 15px;
+            text-align: center;
+            padding: 10px;
+        } */
+        .weatherCard {
+            font-style: italic;
+            text-align: center;
+            border: 1px solid black;
+            color: black;
+            margin-top: 20px;
+            width: 20%;
+            height: auto;
+            border-radius: 30px;
+            padding: 10px;
+            background-color: transparent;
+        }
+        input {
+            width: 20%;
+            display: inline-block;
+            background: #f1f1f1;
+            font-size: 15px;
+            padding: 16px 20px;
+            margin: 8px 0;
+            border-radius: 25px;
+            height: 10px;
+            border-color: #f1f1f1;
+            }
+
+        button {
+            text-align: center;
+            color: rgb(0, 0, 0);
+            padding: 16px 20px;
+            margin: 8px 0;
+            border-radius: 25px;
+            width: 10%;
+            opacity: 0.9;
+            height: 50px;
+            
+            }
+
+        /* .button{
+            border: 3px solid rgb(92, 92, 60);;
+            border-radius: 20px;
+        } */
+        #forecast {
+            display: flex;
+            overflow-x: scroll;
+        }
+
+        #forecast>div {
+            
+            margin: 28px;
+            padding: 60px;
+            text-align: center;
+        }
+    </style>
+
+</head>
+
+<body>
+    <h1><u><center> Basit's Weather App</center></u></h1>
+
+
+    <form onsubmit="submitFunction(); return false">
+        <h3 > <input class="button" type="text" id="cityName" required>
+        <br>
+        <button style="border: 1px solid; border-radius: 25px ";>Get Weather</button>
+    </form>
+    <div id="current"></div>
+    <div id="forecast"></div>
+
+
+    <script>
+        alert("Welcome to Basit's Weather App");
+        function submitFunction() {
+            let cityName = document.querySelector("#cityName").value
+
+            //get current weather
+
+            axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=c0342e5a00f1047c8f804cedd3b0844a&units=metric`)
+                .then(function (response) {
+                    console.log("Current :",response.data);
+
+                    document.querySelector("#current").innerHTML =
+                    `<center>
+                    <div class="weatherCard">
+                    <h3 id="upResult"></h3>
+                    <h1 id="result"></h1>
+                    <span id ="description"></span><br>
+                    <img src= "" id="icon"/>
+                    <h2 id="isresult"></h2>
+                    <p id="leftResult"></p>
+                    <p id="rightResult"></p>
+                    <span id="downResult"></span>
+                    </center>`
+
+                   
+                    document.querySelector("#result").innerHTML =`
+                        ${response.data.main.temp.toFixed(0)}°C`;
+                    document.querySelector("#upResult").innerHTML =
+                        `${response.data.name} <br> Now`;
+                    
+                    document.querySelector("#leftResult").innerHTML =
+                    ` Speed of Wind: ${response.data.wind.speed} m/s`;
+                    document.querySelector("#description").innerHTML =
+                    `${response.data.weather[0].description}`;
+
+                    document.querySelector("#icon").src =`http://openweathermap.org/img/wn/${response.data.weather[0].icon}@2x.png`
+                    
+                    document.querySelector("#rightResult").innerHTML =
+                    ` Humidity ${response.data.main.humidity}%`; 
+
+                    document.querySelector("#downResult").innerHTML =
+                        `${response.data.main.temp_min.toFixed(0)}°C - ${response.data.main.temp_max.toFixed(0)}°C `;
+                    
+                 
+                    
+                })
+                .catch(function (error) {
+                    console.log(error);
+                })
+
+                // get 5 day forecast
+            axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=e0f99c494c2ce394a18cc2fd3f100543&units=metric`)
+                .then(function (response) {
+
+
+                    console.log("forecast: ", response.data);
+
+                    let forecastDiv = document.querySelector("#forecast");
+                    forecastDiv.innerHTML = ""
+
+                    response.data.list.map(eachItem => {
+
+                        forecastDiv.innerHTML +=
+                            `<div class="weatherCard">
+                                <span>${moment(eachItem.dt_txt).format("ddd Do MMM")}</span>
+                                <br/>
+                                <span>${moment(eachItem.dt_txt).format("ha")}</span>
+                                <h1 >${eachItem?.main?.temp.toFixed(0)}°C</h1>
+                                <span>${eachItem?.weather[0].description}</span>
+                                <img src="https://openweathermap.org/img/wn/${eachItem?.weather[0]?.icon}@2x.png"/>
+                                <br />
+                                <p>Humidity ${eachItem?.main.humidity}%</p>
+                                <p>Wind ${eachItem?.wind.speed}m/s</p?<br>
+                                <span>${eachItem?.main?.temp_min.toFixed(0)}°C - ${eachItem?.main?.temp_min.toFixed(0)}°C </span>
+                                </div>`
+                    })
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+
+        }
+
+    </script>
+</body>
+
+</html>
